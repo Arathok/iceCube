@@ -4,9 +4,14 @@ import com.wurmonline.server.creatures.Communicator;
 import com.wurmonline.server.players.Player;
 import org.gotti.wurmunlimited.modloader.interfaces.*;
 
+import java.io.IOException;
 import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class IceCube implements WurmServerMod, PreInitable, Initable, Configurable, PlayerMessageListener,PlayerLoginListener,ServerPollListener,ServerStartedListener,ItemTemplatesCreatedListener {
+
+    public static final Logger logger = Logger.getLogger("IceCube");
 
     @Override
     public void configure(Properties properties) {
@@ -16,6 +21,19 @@ public class IceCube implements WurmServerMod, PreInitable, Initable, Configurab
     @Override
     public void onItemTemplatesCreated() {
         //Code is called in the phase where items are generated
+        logger.log(Level.INFO,"creating IceCube Item!");
+        try {
+
+            IceCubeItem.registerIceCube();
+
+
+
+        } catch (IOException e) {
+            logger.log(Level.WARNING,"Something went wrong creating the Item!"+e.getMessage(),e);
+            //with this logging you can remove printStacktrace
+            throw new RuntimeException(e);
+        }
+        logger.log(Level.INFO,"Done creating IceCube Item!");
     }
 
     @Override
@@ -36,7 +54,7 @@ public class IceCube implements WurmServerMod, PreInitable, Initable, Configurab
     public boolean onPlayerMessage(Communicator communicator, String s) {
         //Code is called when ANY player types a message (in local)
 
-        if (s.equals("joke"))
+        if (s.equals("/joke"))
         {
             communicator.sendNormalServerMessage("Why did the Chicken cross the road? Because it wanted to switch sides!");
         }
